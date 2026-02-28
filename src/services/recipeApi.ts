@@ -2,7 +2,6 @@ import type { Recipe } from '../types/recipe';
 import { getHuggingFaceResponse } from './huggingface';
 
 const extractJSON = (text: string): string => {
-  console.log("LLM Raw Response:", text);
   
   // Try markdown blocks first
   const mdMatch = text.match(/```(?:json)?\s*([\s\S]*?)```/);
@@ -46,13 +45,16 @@ const extractJSON = (text: string): string => {
     lastBracket = text.lastIndexOf(closingChar);
   }
 
+  if (lastBracket <= firstBracket) {
+    throw new Error("Invalid structure: Closing bracket not found or appears before opening bracket. The response might be truncated.");
+  }
+
   const json = text.substring(firstBracket, lastBracket + 1);
   const cleaned = json
     .trim()
     .replace(/[\u0000-\u001F\u007F-\u009F]/g, " ")
     .replace(/,\s*[\]\}]/g, (m) => m.replace(',', ''));
     
-  console.log("Cleaned JSON String:", cleaned);
   return cleaned;
 };
 
@@ -132,16 +134,22 @@ export const generateMealPlan = async (
   const prompt = `Task: Create a meal plan for ${durationText} using these ingredients: ${ingredients}.
   Context: Budget: ${prefs?.budget}, Family: ${prefs?.familySize}, Cuisine: ${prefs?.cuisine}.
   Language: ${langText}.
-  Output: Return ONLY a valid JSON array. Each object MUST have keys: "day", "title", "description", "mealType", "prepTime", "servings", "difficulty", "cuisine", "isFull": false.
-  Total ${days * 3} recipes. Example: [{"day": "Day 1", "title": "Breakfast...", ...}]`;
+  Output: Return ONLY a valid JSON array. Each object MUST have keys: "day", "title", "desc", "mealType", "prep", "serv", "diff", "cuis", "isFull": false.
+  Total ${days * 3} recipes. Example: [{"day": "Day 1", "title": "Recipe", "desc": "Summary", ...}]`;
 
   try {
     const rawResponse = await getHuggingFaceResponse(prompt);
     const jsonStr = extractJSON(rawResponse);
     const recipes = JSON.parse(jsonStr);
     
+    // Map shortened keys back to Recipe type if needed, or ensure Recipe type matches
     return recipes.map((r: any, i: number) => ({
       ...r,
+      description: r.desc || r.description,
+      prepTime: r.prep || r.prepTime,
+      servings: r.serv || r.servings,
+      difficulty: r.diff || r.difficulty,
+      cuisine: r.cuis || r.cuisine,
       id: `plan_${Date.now()}_${i}`
     }));
   } catch (error) {
