@@ -1,0 +1,46 @@
+.stepper {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: #fdfdfd;
+  border-left: 4px solid var(--primary);
+  border-radius: 8px;
+}
+
+.stepper-progress {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.step-content {
+  min-height: 80px;
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+.timer-badge {
+  display: inline-block;
+  margin-top: 1rem;
+  background: var(--accent);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.stepper-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.stepper-actions button {
+  padding: 8px 20px;
+  background: #eee;
+  flex: 1;
+}
+
+.stepper-actions button:hover:not(:disabled) {
+  background: #e0e0e0;
+}

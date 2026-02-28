@@ -1,0 +1,43 @@
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8rem 2rem;
+  text-align: center;
+  gap: 1.5rem;
+  animation: fadeIn 0.8s ease-out;
+}
+
+.empty-icon-wrapper {
+  background: #F8F9F8;
+  width: 120px;
+  height: 120px;
+  border-radius: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  border: 1px solid #E8F0EE;
+}
+
+.empty-icon {
+  color: var(--secondary);
+  opacity: 0.8;
+}
+
+.empty-text {
+  font-size: 1.1rem;
+  color: #94A3B8;
+  font-weight: 500;
+}
+
+.empty-text .highlight {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
