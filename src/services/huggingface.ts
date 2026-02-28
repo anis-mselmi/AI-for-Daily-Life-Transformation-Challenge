@@ -11,9 +11,11 @@ export const getHuggingFaceResponse = async (prompt: string) => {
   const response = await client.chatCompletion({
     model: 'meta-llama/Llama-3.2-3B-Instruct',
     messages: [
+      { role: 'system', content: 'You are a professional chef. Always respond with raw JSON only. No markdown. No conversational text. No explanations.' },
       { role: 'user', content: prompt }
     ],
     max_tokens: 2000,
+    temperature: 0.1, // Lower temperature for more consistent JSON
   });
 
   return response.choices[0].message.content || "";

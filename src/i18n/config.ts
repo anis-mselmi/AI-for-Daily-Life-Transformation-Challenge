@@ -39,7 +39,8 @@ const resources = {
       "generate_plan": "Generate Week Plan",
       "next_3_days": "Next 3 Days",
       "full_week": "Full Week (7 Days)",
-      "customize_plan": "Customize Your Period"
+      "customize_plan": "Customize Your Period",
+      "days": "Days"
     }
   },
   fr: {
@@ -78,7 +79,8 @@ const resources = {
       "generate_plan": "Générer Plan de Semaine",
       "next_3_days": "Prochains 3 Jours",
       "full_week": "Semaine Complète (7 Jours)",
-      "customize_plan": "Personnalisez Votre Période"
+      "customize_plan": "Personnalisez Votre Période",
+      "days": "Jours"
     }
   }
 };

@@ -38,7 +38,7 @@
 }
 
 .new-chat-btn:hover {
-  background: #f0fdf4;
+  background: rgba(43, 121, 194, 0.1);
 }
 
 .history-list {
@@ -59,14 +59,14 @@
 }
 
 .history-item:hover {
-  background: #F4FBF9;
+  background: rgba(43, 121, 194, 0.05);
   border-color: var(--primary);
 }
 
 .history-item.active {
-  background: #f0fdf4;
+  background: rgba(43, 121, 194, 0.1);
   border-color: var(--primary);
-  box-shadow: 0 4px 12px rgba(0, 200, 83, 0.1);
+  box-shadow: 0 4px 12px rgba(43, 121, 194, 0.15);
 }
 
 .history-item.active .title {

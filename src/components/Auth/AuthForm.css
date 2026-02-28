@@ -50,7 +50,7 @@
 .auth-input:focus {
   border-color: var(--primary);
   background: white;
-  box-shadow: 0 10px 15px -3px rgba(0, 200, 83, 0.1);
+  box-shadow: 0 10px 15px -3px rgba(43, 121, 194, 0.1);
 }
 
 .auth-submit-btn {
@@ -64,7 +64,7 @@
   border: none;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 10px 20px -5px rgba(0, 200, 83, 0.3);
+  box-shadow: 0 10px 20px -5px rgba(43, 121, 194, 0.3);
   margin-top: 1rem;
 }
 
@@ -109,7 +109,7 @@
 }
 
 .auth-msg.success {
-  background: #f0fdf4;
-  color: var(--primary-dark);
-  border: 1px solid #dcfce7;
+  background: rgba(43, 121, 194, 0.05);
+  color: var(--primary);
+  border: 1px solid rgba(43, 121, 194, 0.2);
 }

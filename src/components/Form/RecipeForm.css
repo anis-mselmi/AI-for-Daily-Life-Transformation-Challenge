@@ -76,9 +76,11 @@
   cursor: pointer;
 }
 
-.option-btn.selected-secondary {
+.option-btn.selected-secondary,
+.plan-btn.selected-secondary {
   background: var(--secondary);
   color: white;
+  border-color: var(--secondary);
   box-shadow: 0 10px 15px -3px rgba(30, 58, 138, 0.2);
   transform: translateY(-2px);
 }

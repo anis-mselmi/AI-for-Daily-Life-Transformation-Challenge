@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { ArrowRight, RotateCcw, Loader2, Users, Globe, UtensilsCrossed, Calendar } from 'lucide-react';
 import { IngredientSelector } from './IngredientSelector';
 import type { IngredientWithQty } from '../../hooks/useRecipe';
@@ -38,6 +39,24 @@ export const RecipeForm = ({
   setDishType
 }: RecipeFormProps) => {
   const { t } = useTranslation();
+  const [selectedPlan, setSelectedPlan] = useState<3 | 7 | null>(null);
+
+  const handleGenerate = () => {
+    if (selectedPlan) {
+      onGetPlan(selectedPlan);
+    } else {
+      onGetRecipe();
+    }
+  };
+
+  const handleClear = () => {
+    setSelectedPlan(null);
+    onClear();
+  };
+
+  const togglePlan = (days: 3 | 7) => {
+    setSelectedPlan(selectedPlan === days ? null : days);
+  };
 
   return (
     <div className="recipe-form-container">
@@ -66,6 +85,7 @@ export const RecipeForm = ({
                 {['French', 'Tunisian', 'Italian', 'Mexican', 'Japanese', 'Indian'].map(c => (
                   <button
                     key={c}
+                    type="button"
                     onClick={() => setCuisine(c)}
                     className={`option-btn ${cuisine === c ? 'selected-secondary' : ''}`}
                     style={{ fontSize: '0.8rem', padding: '0.5rem' }}
@@ -84,6 +104,7 @@ export const RecipeForm = ({
                 {['entrée', 'main', 'dessert', 'full_package'].map(dt => (
                   <button
                     key={dt}
+                    type="button"
                     onClick={() => setDishType(dt)}
                     className={`option-btn ${dishType === dt ? 'selected-secondary' : ''}`}
                     style={{ fontSize: '0.8rem', padding: '0.5rem' }}
@@ -102,6 +123,7 @@ export const RecipeForm = ({
                 {['1', '2', '4', '6+'].map(s => (
                   <button
                     key={s}
+                    type="button"
                     onClick={() => setFamilySize(s)}
                     className={`option-btn ${familySize === s ? 'selected-secondary' : ''}`}
                   >
@@ -117,16 +139,18 @@ export const RecipeForm = ({
               </label>
               <div className="option-group">
                 <button 
-                  onClick={() => onGetPlan(3)}
-                  disabled={loading || (ingredients.length === 0 && secretIngredients.length === 0)}
-                  className="plan-btn"
+                  type="button"
+                  onClick={() => togglePlan(3)}
+                  disabled={loading}
+                  className={`plan-btn ${selectedPlan === 3 ? 'selected-secondary' : ''}`}
                 >
                   {t('next_3_days')}
                 </button>
                 <button 
-                  onClick={() => onGetPlan(7)}
-                  disabled={loading || (ingredients.length === 0 && secretIngredients.length === 0)}
-                  className="plan-btn"
+                  type="button"
+                  onClick={() => togglePlan(7)}
+                  disabled={loading}
+                  className={`plan-btn ${selectedPlan === 7 ? 'selected-secondary' : ''}`}
                 >
                   {t('full_week')}
                 </button>
@@ -135,8 +159,9 @@ export const RecipeForm = ({
 
             <div className="action-stack">
               <button 
+                type="button"
                 className="generate-btn"
-                onClick={onGetRecipe}
+                onClick={handleGenerate}
                 disabled={loading || (ingredients.length === 0 && secretIngredients.length === 0)}
               >
                 {loading ? (
@@ -144,11 +169,17 @@ export const RecipeForm = ({
                 ) : (
                   <ArrowRight size={24} />
                 )}
-                {loading ? t('simmering') : t('generate_recipe')}
+                {loading 
+                  ? t('simmering') 
+                  : selectedPlan 
+                    ? `${t('generate_plan')} (${selectedPlan} ${t('days').toLowerCase()})`
+                    : t('generate_recipe')
+                }
               </button>
               
               <button 
-                onClick={onClear}
+                type="button"
+                onClick={handleClear}
                 className="reset-btn"
               >
                 <RotateCcw size={18} /> {t('reset_all')}

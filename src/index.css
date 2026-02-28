@@ -1,9 +1,10 @@
 
 :root {
-  --primary: #00C853;
-  --primary-dark: #00A443;
-  --secondary: #1E3A8A; /* Changed from black to deep blue/indigo */
-  --secondary-light: #3B82F6;
+  --primary: #2B79C2; /* KoolAi Blue */
+  --primary-dark: #1E3A8A; /* Dark Blue */
+  --secondary: #F59120; /* KoolAi Orange */
+  --secondary-light: #FFB74D;
+  --accent: #5D9ED6; /* Light Blue */
   --bg-main: #FAFCFB;
   --bg-card: #FFFFFF;
   --text-main: #1A1A1A;
@@ -15,7 +16,7 @@
 }
 
 body {
-  background: radial-gradient(circle at top left, #EDF9F5 0%, #FFFFFF 100%);
+  background: radial-gradient(circle at top left, #F0F7FF 0%, #FFFFFF 100%);
 }
 
 * {
@@ -68,15 +69,15 @@ body {
 }
 
 .status-badge {
-  background: rgba(0, 200, 83, 0.1);
-  color: var(--primary-dark);
+  background: rgba(43, 121, 194, 0.1);
+  color: var(--primary);
   padding: 0.25rem 0.75rem;
   border-radius: 9999px;
   font-size: 0.75rem;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  border: 1px solid rgba(0, 200, 83, 0.2);
+  border: 1px solid rgba(43, 121, 194, 0.2);
 }
 
 .results-grid {
@@ -106,7 +107,7 @@ body {
 .generate-more-btn:hover {
   border-color: var(--primary);
   color: var(--primary);
-  background: #f0fdf4;
+  background: rgba(43, 121, 194, 0.05);
 }
 
 .lang-selector {
@@ -122,7 +123,7 @@ body {
   background: linear-gradient(135deg, var(--primary), var(--primary-dark));
   padding: 2px;
   border-radius: 14px;
-  box-shadow: 0 10px 20px -5px rgba(0, 200, 83, 0.3);
+  box-shadow: 0 10px 20px -5px rgba(43, 121, 194, 0.3);
   overflow: hidden;
 }
 
@@ -248,7 +249,7 @@ body {
 .chat-icon {
   width: 40px;
   height: 40px;
-  background: #f0fdf4;
+  background: rgba(43, 121, 194, 0.1);
   color: var(--primary);
   border-radius: 10px;
   display: flex;

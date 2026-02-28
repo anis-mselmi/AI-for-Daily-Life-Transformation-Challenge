@@ -2,13 +2,58 @@ import type { Recipe } from '../types/recipe';
 import { getHuggingFaceResponse } from './huggingface';
 
 const extractJSON = (text: string): string => {
-  // Regex to find content inside [ ] or { } even if markdown is present
-  const match = text.match(/(\[[\s\S]*\]|\{[\s\S]*\})/);
-  if (!match) throw new Error("No JSON found");
-  let json = match[0];
-  // Sanitize literal control characters that break JSON.parse (line breaks, etc are okay inside strings if escaped, 
-  // but literal ones are often returned by LLMs)
-  return json.replace(/[\u0000-\u001F\u007F-\u009F]/g, " ");
+  console.log("LLM Raw Response:", text);
+  
+  // Try markdown blocks first
+  const mdMatch = text.match(/```(?:json)?\s*([\s\S]*?)```/);
+  if (mdMatch && mdMatch[1]) {
+    return mdMatch[1].trim();
+  }
+
+  // Find boundaries of the first structure found
+  const firstBracket = text.search(/[\[\{]/);
+  if (firstBracket === -1) throw new Error("No JSON structure found");
+  
+  const char = text[firstBracket];
+  const closingChar = char === '[' ? ']' : '}';
+  let stack = 0;
+  let lastBracket = -1;
+  let inString = false;
+  let escaped = false;
+
+  for (let i = firstBracket; i < text.length; i++) {
+    const c = text[i];
+    
+    if (c === '"' && !escaped) {
+      inString = !inString;
+    }
+    
+    if (!inString) {
+      if (c === char) stack++;
+      else if (c === closingChar) {
+        stack--;
+        if (stack === 0) {
+          lastBracket = i;
+          break;
+        }
+      }
+    }
+    
+    escaped = (c === '\\' && !escaped);
+  }
+
+  if (lastBracket === -1) {
+    lastBracket = text.lastIndexOf(closingChar);
+  }
+
+  const json = text.substring(firstBracket, lastBracket + 1);
+  const cleaned = json
+    .trim()
+    .replace(/[\u0000-\u001F\u007F-\u009F]/g, " ")
+    .replace(/,\s*[\]\}]/g, (m) => m.replace(',', ''));
+    
+  console.log("Cleaned JSON String:", cleaned);
+  return cleaned;
 };
 
 export const generateRecipeList = async (
@@ -21,19 +66,10 @@ export const generateRecipeList = async (
   const prompt = `Task: Propose 6 recipe ideas using these ingredients: ${ingredients}. 
   Context: Budget: ${prefs?.budget}, Family: ${prefs?.familySize}, Cuisine: ${prefs?.cuisine}, Dish Type: ${prefs?.dishType}.
   Language: ${langText}.
-  Output: Return ONLY a valid JSON array. DO NOT include any introductory text, markdown formatting (like \`\`\`json), or concluding notes.
-  Each object MUST follow this schema exactly:
-  [{ 
-    "id": "unique_id_string",
-    "title": "Recipe Name", 
-    "description": "Short catchy summary", 
-    "mealType": "Entrée or Main or Dessert",
-    "prepTime": "XX mins", 
-    "servings": "${prefs?.familySize}", 
-    "difficulty": "Easy/Moderate/Hard",
-    "cuisine": "${prefs?.cuisine}",
-    "isFull": false
-  }]`;
+  Output: Return ONLY a valid JSON array. Ensure all text values use valid JSON escaping for quotes (\" and \n).
+  DO NOT include any introductory text, markdown formatting (like \`\`\`json), or notes.
+  Example structure:
+  [{"id": "recipe1", "title": "Pasta with \"Special\" Sauce", "description": "Quick & tasty"}]`;
 
   try {
     const rawResponse = await getHuggingFaceResponse(prompt);
@@ -56,15 +92,10 @@ export const generateRecipeDetails = async (
 ): Promise<Recipe> => {
   const langText = lang === 'FR' ? 'French (Français)' : 'English';
   
-  const prompt = `Task: Provided the recipe idea "${recipe.title}" (${recipe.description}), generate the full ingredients and step-by-step instructions.
+  const prompt = `Task: Given the recipe idea "${recipe.title}" (${recipe.description}), generate full ingredients and step-by-step instructions.
   Language: ${langText}.
-  Output: Return ONLY a valid JSON object. DO NOT include any markdown code blocks or text.
-  Schema:
-  {
-    "ingredients": ["Detail quantity e.g. 500g chicken breasts", "..."], 
-    "instructions": ["Short step description", "..."], 
-    "timerMinutes": [0, 5, 0] 
-  }`;
+  Output: Return ONLY a valid JSON object. Use double quote escaping if needed.
+  Format: {"ingredients": ["500g chicken breasts", "..."], "instructions": ["Dice the chicken", "..."], "timerMinutes": [0, 5, 0]}`;
 
   try {
     const rawResponse = await getHuggingFaceResponse(prompt);
@@ -101,20 +132,8 @@ export const generateMealPlan = async (
   const prompt = `Task: Create a meal plan for ${durationText} using these ingredients: ${ingredients}.
   Context: Budget: ${prefs?.budget}, Family: ${prefs?.familySize}, Cuisine: ${prefs?.cuisine}.
   Language: ${langText}.
-  Output: Return ONLY a valid JSON array of recipe objects.
-  Each object MUST follow this schema exactly:
-  [{ 
-    "day": "Day 1",
-    "title": "Recipe Name", 
-    "description": "Short summary", 
-    "mealType": "Breakfast/Lunch/Dinner",
-    "prepTime": "XX mins", 
-    "servings": "${prefs?.familySize}", 
-    "difficulty": "Easy/Moderate/Hard",
-    "cuisine": "${prefs?.cuisine}",
-    "isFull": false
-  }]
-  Provide 3 recipes (Breakfast, Lunch, Dinner) for each of the ${days} days. Total ${days * 3} recipes.`;
+  Output: Return ONLY a valid JSON array. Each object MUST have keys: "day", "title", "description", "mealType", "prepTime", "servings", "difficulty", "cuisine", "isFull": false.
+  Total ${days * 3} recipes. Example: [{"day": "Day 1", "title": "Breakfast...", ...}]`;
 
   try {
     const rawResponse = await getHuggingFaceResponse(prompt);
