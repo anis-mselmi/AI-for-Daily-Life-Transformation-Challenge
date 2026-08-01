@@ -71,3 +71,10 @@ export default defineConfig([
   },
 ])
 ```
+
+## Why This Project Stands Out
+
+- **AI Recipes** - Generate personalized recipes using artificial intelligence
+- **Daily Challenges** - Transform your life one day at a time
+- **Beautiful UI** - Clean, modern interface built with React
+- **Personalized** - AI adapts to your preferences and goals
